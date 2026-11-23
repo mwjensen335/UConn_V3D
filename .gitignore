@@ -1,0 +1,41 @@
+# ---------------------------------------------------------------
+# NEVER COMMIT SUBJECT DATA
+# Qualisys subject folders are named <LastName>_<ID> and contain names,
+# dates of birth, video and motion data. Databases (real or mock) are
+# derived from that data and are rebuilt locally from the exports.
+# ---------------------------------------------------------------
+
+# Qualisys subject / session folders
+*_RTP_*/
+Data/
+
+# Raw and processed capture files (in case any land elsewhere)
+*.qtm
+*.qpr
+*.c3d
+*.avi
+*.mp4
+*.cmz
+*.cmx
+session.xml
+session_data.xml
+*-3d-data.json
+*-3d-data.xml
+*.settings.xml
+*.settings.xml.txt
+
+# Databases (real and mock) - rebuild with rtp_ingest.py / make_mock_database.py
+database/
+*.h5
+*.h5.tmp
+
+# V3D export drop folders and staging
+V3D_Exports/
+V3D_Input/
+
+# Python / editor
+__pycache__/
+*.pyc
+.venv/
+.vscode/
+~$*.xlsx

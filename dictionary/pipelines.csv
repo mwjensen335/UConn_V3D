@@ -1,0 +1,24 @@
+file,pipeline,movement,system,notes
+1) OPEN-PROCESS_UCONN_kinematics.v3s,UCONN_kinematics,jump-landing; squat,markerless,
+2) AVG-NORM_UCONN_kinematics.v3s,UCONN_kinematics,jump-landing; squat,markerless,
+3) EXPORT_UCONN_kinematics.v3s,UCONN_kinematics,jump-landing; squat,markerless,
+4) EXPORT-DB_UCONN_kinematics.v3s,UCONN_kinematics,jump-landing; squat,markerless,"auto-guessed, please check"
+Batch_Open_to_Export.v3s,Batch_Open_to_Export,gait,markerless,
+example-gait-pipeline.v3s,example-gait-pipeline,gait,markerless,
+football-throw-pipeline.v3s,football-throw-pipeline,throwing,markerless,
+RTP-Assessment/Models/Theia.mdh,RTP_model,all,markerless,Qualisys RTP-Assessment (PAF) pipeline; reference copy
+RTP-Assessment/pipeline_CMJ.v3s,RTP_CMJ,counter-movement-jump,markerless,Qualisys RTP-Assessment (PAF) pipeline; reference copy
+RTP-Assessment/pipeline_SJ.v3s,RTP_SJ,squat-jump,markerless,Qualisys RTP-Assessment (PAF) pipeline; reference copy
+RTP-Assessment/pipeline_squatting.v3s,RTP_squatting,squatting,markerless,Qualisys RTP-Assessment (PAF) pipeline; reference copy
+RTP-Assessment/pipeline_static.v3s,RTP_static,static,markerless,Qualisys RTP-Assessment (PAF) pipeline; reference copy
+Theia3DxLESS-main/v3d_scripts/00_build_cmz.v3s,Theia3DxLESS,jump-landing,markerless,
+Theia3DxLESS-main/v3d_scripts/0_call_script.v3s,Theia3DxLESS,jump-landing,markerless,
+Theia3DxLESS-main/v3d_scripts/1_compute_model_based.v3s,Theia3DxLESS,jump-landing,markerless,
+Theia3DxLESS-main/v3d_scripts/2_events.v3s,Theia3DxLESS,jump-landing,markerless,
+Theia3DxLESS-main/v3d_scripts/3_less_values.v3s,Theia3DxLESS,jump-landing,markerless,
+Theia3DxLESS-main/v3d_scripts/4_less_errors.v3s,Theia3DxLESS,jump-landing,markerless,
+Theia3DxLESS-main/v3d_scripts/5_less_totals.v3s,Theia3DxLESS,jump-landing,markerless,
+Theia3DxLESS-main/v3d_scripts/6_less_overall.v3s,Theia3DxLESS,jump-landing,markerless,
+Theia3DxLESS-main/v3d_scripts/7_report_export.v3s,Theia3DxLESS,jump-landing,markerless,
+Theia3DxLESS-main/v3d_scripts/ADDIGNIMAGESTOREPORTS/IMAGEWORKSPLUSRPORT.v3s,Theia3DxLESS,jump-landing,markerless,
+Theia3DxLESS-main/v3d_scripts/ADDIGNIMAGESTOREPORTS/IMAGEWORKSPLUSRPORTforFILT1.v3s,Theia3DxLESS,jump-landing,markerless,

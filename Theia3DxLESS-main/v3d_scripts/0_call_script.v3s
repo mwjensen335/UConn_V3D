@@ -1,0 +1,58 @@
+!set call script path (all the following scripts called need to live here)
+Set_Pipeline_Parameter_To_Folder_Path
+/PARAMETER_NAME=CALL_SCRIPT_SCRIPT_PATH
+/PARAMETER_VALUE=R:\nrg02003\LabWork\Theia Data\V3D codebase\Pipelines\Theia3DxLESS-main\v3d_scripts
+;
+
+! select all files
+Select_Active_File
+/FILE_NAME=ALL_FILES
+! /QUERY=
+;
+
+! computer model based metrics (i.e. joint angles)
+Call_Script
+/SCRIPT_FILE_NAME=1_compute_model_based.v3s
+/SCRIPT_PATH=::CALL_SCRIPT_SCRIPT_PATH
+;
+
+! calculate important events of the jump
+Call_Script
+/SCRIPT_FILE_NAME=2_events.v3s
+/SCRIPT_PATH=::CALL_SCRIPT_SCRIPT_PATH
+;
+
+! get values needed to calculate errors
+Call_Script
+/SCRIPT_FILE_NAME=3_less_values.v3s
+/SCRIPT_PATH=::CALL_SCRIPT_SCRIPT_PATH
+;
+
+! determine errors
+Call_Script
+/SCRIPT_FILE_NAME=4_less_errors.v3s
+/SCRIPT_PATH=::CALL_SCRIPT_SCRIPT_PATH
+;
+
+! compute less total scores per trial
+Call_Script
+/SCRIPT_FILE_NAME=5_less_totals.v3s
+/SCRIPT_PATH=::CALL_SCRIPT_SCRIPT_PATH
+;
+
+! compute summary LESS scores across all trials
+Call_Script
+/SCRIPT_FILE_NAME=6_less_overall.v3s
+/SCRIPT_PATH=::CALL_SCRIPT_SCRIPT_PATH
+;
+
+! compute summary LESS scores across all trials
+Call_Script
+/SCRIPT_FILE_NAME=7_report_export.v3s
+/SCRIPT_PATH=::CALL_SCRIPT_SCRIPT_PATH
+;
+
+! save workspace
+File_Save
+! /SET_PROMPT=Save CMZ file
+;

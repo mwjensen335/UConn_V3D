@@ -1,0 +1,67 @@
+! =====================================================================
+! EXPORT DEBUG - run right after "1) OPEN-PROCESS_UCONN_kinematics.v3s"
+! (same V3D session, workspace still open).
+!
+! Writes up to 4 small test files into V3D_Exports. Whichever files appear
+! tells us which part of the real export is failing:
+!
+!   test1_all_files.txt   basic export works (fixed path, all files, 1 signal)
+!   test2_JL_only.txt     the JL tag/query selects the jump-landing trials
+!   test3_prompted.txt    the folder picker + text prompts work
+!   test4_events.txt      exporting EVENT_LABEL works
+! =====================================================================
+
+! ---- TEST 1: fixed path, every file, one signal, no prompts
+Select_Active_File
+/FILE_NAME=ALL_FILES
+;
+
+Export_Data_To_Ascii_File
+/FILE_NAME=C:\Users\mikey\OneDrive - University of Connecticut\Python_V3D\V3D_Exports\test1_all_files.txt
+/SIGNAL_TYPES=LINK_MODEL_BASED
+/SIGNAL_NAMES=LEFT_KNEE_ANGLE
+;
+
+! ---- TEST 2: same, but only files tagged JL
+Select_Active_File
+/FILE_NAME=ALL_FILES
+/QUERY=JL
+;
+
+Export_Data_To_Ascii_File
+/FILE_NAME=C:\Users\mikey\OneDrive - University of Connecticut\Python_V3D\V3D_Exports\test2_JL_only.txt
+/SIGNAL_TYPES=LINK_MODEL_BASED
+/SIGNAL_NAMES=LEFT_KNEE_ANGLE
+;
+
+! ---- TEST 3: folder picker + prompted text, as in the real export
+Set_Pipeline_Parameter_To_Folder_Path
+/PARAMETER_NAME=EXPORT_FOLDER
+/PARAMETER_VALUE=
+/SET_PROMPT=Select the V3D_Exports folder
+;
+
+Prompt_For_Pipeline_Parameter_Value
+/PIPELINE_PARAMETER_NAME=SUBJECT
+/PROMPT=Type TEST
+/DATATYPE=string
+/DEFAULT_VALUE=
+;
+
+Export_Data_To_Ascii_File
+/FILE_NAME=::EXPORT_FOLDER&test3_prompted_&::SUBJECT&.txt
+/SIGNAL_TYPES=LINK_MODEL_BASED
+/SIGNAL_NAMES=LEFT_KNEE_ANGLE
+/CREATE_FOLDER_PATH=TRUE
+;
+
+! ---- TEST 4: events
+Export_Data_To_Ascii_File
+/FILE_NAME=C:\Users\mikey\OneDrive - University of Connecticut\Python_V3D\V3D_Exports\test4_events.txt
+/SIGNAL_TYPES=EVENT_LABEL
+/SIGNAL_NAMES=START+IC+END
+;
+
+Select_Active_File
+/FILE_NAME=ALL_FILES
+;

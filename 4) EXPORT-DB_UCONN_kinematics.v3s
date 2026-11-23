@@ -1,0 +1,84 @@
+! =====================================================================
+! STANDARD DATABASE EXPORT - jump landing (UCONN kinematics)
+!
+! Run AFTER "1) OPEN-PROCESS_UCONN_kinematics.v3s" with the subject's
+! workspace still open (or the saved .cmz re-opened).
+!
+! Writes two files per subject/session into one drop folder:
+!   <SUBJECT>_<SESSION>_<SYSTEM>_<MOVEMENT>_signals.txt  every JL trial, every frame
+!   <SUBJECT>_<SESSION>_<SYSTEM>_<MOVEMENT>_events.txt   event times for every JL trial
+!
+! Signals are exported with the names this pipeline uses (e.g. LEFT_KNEE_ANGLE).
+! Python maps them to the lab's standard names and sign convention using
+! dictionary/standard_names.csv, so nothing needs renaming in V3D.
+!
+! Individual trials only - no averaging or time normalization here. Python
+! can average and normalize from the raw trials and events.
+! =====================================================================
+
+! ------------------------------------------------ WHERE + WHO
+Set_Pipeline_Parameter_To_Folder_Path
+/PARAMETER_NAME=EXPORT_FOLDER
+/PARAMETER_VALUE=
+/SET_PROMPT=Select the database drop folder (V3D_Exports)
+;
+
+Prompt_For_Pipeline_Parameter_Value
+/PIPELINE_PARAMETER_NAME=SUBJECT
+/PROMPT=Subject ID (e.g. S005)
+/DATATYPE=string
+/DEFAULT_VALUE=
+;
+
+Prompt_For_Pipeline_Parameter_Value
+/PIPELINE_PARAMETER_NAME=SESSION
+/PROMPT=Session date (YYYY-MM-DD)
+/DATATYPE=string
+/DEFAULT_VALUE=
+;
+
+! Fixed for this pipeline. Change SYSTEM to markered for a marker-based version.
+Set_Pipeline_Parameter
+/PARAMETER_NAME=SYSTEM
+/PARAMETER_VALUE=markerless
+;
+
+Set_Pipeline_Parameter
+/PARAMETER_NAME=MOVEMENT
+/PARAMETER_VALUE=jump-landing
+;
+
+! ------------------------------------------------ JUMP-LANDING TRIALS ONLY
+Select_Active_File
+/FILE_NAME=ALL_FILES
+/QUERY=JL
+;
+
+! ------------------------------------------------ SIGNALS (all frames, each trial)
+Export_Data_To_Ascii_File
+/FILE_NAME=::EXPORT_FOLDER&::SUBJECT&_&::SESSION&_&::SYSTEM&_&::MOVEMENT&_signals.txt
+/SIGNAL_TYPES=LINK_MODEL_BASED
+/SIGNAL_FOLDER=ORIGINAL
+/SIGNAL_NAMES=LEFT_ANKLE_ANGLE+LEFT_KNEE_ANGLE+LEFT_HIP_ANGLE+LEFT_FOOT_ANGLE+LEFT_SHANK_ANGLE+LEFT_THIGH_ANGLE+LEFT_FOREFOOT_ANGLE+LEFT_TOE_ANGLE+RIGHT_ANKLE_ANGLE+RIGHT_KNEE_ANGLE+RIGHT_HIP_ANGLE+RIGHT_FOOT_ANGLE+RIGHT_SHANK_ANGLE+RIGHT_THIGH_ANGLE+RIGHT_FOREFOOT_ANGLE+RIGHT_TOE_ANGLE+LEFT_PELVIS_ANGLE+RIGHT_PELVIS_ANGLE+RIGHT_TRUNK_ANGLE+LEFT_ANKLE_POSITION+LEFT_KNEE_POSITION+LEFT_HIP_POSITION+LEFT_TOE_POSITION+RIGHT_ANKLE_POSITION+RIGHT_KNEE_POSITION+RIGHT_HIP_POSITION+RIGHT_TOE_POSITION+RIGHT_MODELCOM_POSITION
+! /SIGNAL_COMPONENTS=
+! /COMPONENT_SEQUENCE=
+/USE_POINT_RATE=TRUE
+/NORMALIZE_DATA=FALSE
+/EXPORT_NAN=TRUE
+/CREATE_FOLDER_PATH=TRUE
+! /USE_SHORT_FILENAME=FALSE    <- keep full trial file names in the header; Python reads trial IDs from them
+;
+
+! ------------------------------------------------ EVENTS (time of each event, each trial)
+Export_Data_To_Ascii_File
+/FILE_NAME=::EXPORT_FOLDER&::SUBJECT&_&::SESSION&_&::SYSTEM&_&::MOVEMENT&_events.txt
+/SIGNAL_TYPES=EVENT_LABEL
+/SIGNAL_NAMES=START+PREP+RPV_VEL_MAX1+RPV_VEL_MIN1+RPV_POS_MIN+RPV_VEL_MAX2+IC+LFT_IC+RFT_IC+L_HEEL_IC+R_HEEL_IC+LTO_IC+RTO_IC+LSK_IC+RSK_IC+LKNEE_MAX+RKNEE_MAX+END_PHASE+END
+/EXPORT_NAN=TRUE
+/CREATE_FOLDER_PATH=TRUE
+;
+
+! Back to all files so anything run afterwards sees the whole workspace
+Select_Active_File
+/FILE_NAME=ALL_FILES
+;

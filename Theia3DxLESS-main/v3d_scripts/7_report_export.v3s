@@ -1,0 +1,34 @@
+!Set Call_Script path
+Set_Pipeline_Parameter_To_Folder_Path
+/PARAMETER_NAME=CALL_SCRIPT_SCRIPT_PATH
+/PARAMETER_VALUE=R:\nrg02003\LabWork\Theia Data\V3D codebase\Pipelines\Theia3DxLESS-main\v3d_scripts
+;
+
+! open report template
+Open_Report_Template
+/REPORT_TEMPLATE=::CALL_SCRIPT_SCRIPT_PATH&report.rgt
+! /SET_PROMPT=Open report template
+;
+
+Set_Pipeline_Parameter_To_Folder_Path
+/PARAMETER_NAME=CMZ_LOCATION
+/PARAMETER_VALUE=
+/PARAMETER_VALUE_MOTION_FILE=*.cmz
+! /PARAMETER_VALUE_SEARCH_FOR=
+! /PARAMETER_VALUE_REPLACE_WITH=
+! /PARAMETER_VALUE_APPEND=
+;
+
+Set_Pipeline_Parameter_From_Expression
+/PARAMETER_NAME=CMZ_NAME
+/EXPRESSION=GLOBAL::TEXT_DATA::SUBJECT_POSE::SUBJECT_POSE
+/AS_INTEGER=FALSE
+;
+
+Export_Metric_Table
+/PAGE_NUMBER=1
+/COLUMN_NUMBER=1
+/ROW_NUMBER=1
+/EXPORT_FILENAME=::CMZ_LOCATION&::CMZ_NAME&_&less_scores.txt
+;
+

@@ -1,0 +1,4 @@
+# Folders to ignore
+v3d_scripts_alt/
+
+.DS_Store

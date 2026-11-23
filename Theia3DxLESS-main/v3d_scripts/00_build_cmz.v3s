@@ -1,0 +1,334 @@
+! Clear v3d workspace
+File_New
+;
+
+! Set path to call_script
+Set_Pipeline_Parameter_To_Folder_Path
+/PARAMETER_NAME=CALL_SCRIPT_SCRIPT_PATH
+/PARAMETER_VALUE=R:\nrg02003\LabWork\Theia Data\V3D codebase\Pipelines\Theia3DxLESS-main\v3d_scripts
+;
+
+! Prompt the user for the either the _c3d folder or subject/session level folder
+Set_Pipeline_Parameter_To_Folder_Path
+/PARAMETER_NAME=FOLDER
+/PARAMETER_VALUE=
+! /PARAMETER_VALUE_MOTION_FILE=
+! /PARAMETER_VALUE_SEARCH_FOR=
+! /PARAMETER_VALUE_REPLACE_WITH=
+! /PARAMETER_VALUE_APPEND=
+/SET_PROMPT=Select _c3d folder 
+;
+
+! Creates a pipeline parameter that is a list of folders that contain .c3d files
+Set_Pipeline_Parameter_To_List_Of_Files
+/PARAMETER_NAME=FOLDER_LIST
+/FOLDER=::FOLDER
+/SEARCH_SUBFOLDERS=TRUE
+/FILE_MASK=*.c3d
+! /ALPHABETIZE=TRUE
+/RETURN_FOLDER_NAMES=TRUE
+;
+
+! Looping through each of the folders in the above list
+For_Each
+/ITERATION_PARAMETER_NAME=ROOTFOLDER
+! /ITERATION_PARAMETER_COUNT_NAME=
+/ITEMS=::FOLDER_LIST
+;
+
+Set_Pipeline_Parameter
+/PARAMETER_NAME=POSE_NUMBERS
+/PARAMETER_VALUE=0+1
+;
+
+! Process of chopping up file path to extract subject level
+Set_Pipeline_Parameter_From_Expression
+/PARAMETER_NAME=PATH_LENGTH
+/EXPRESSION=STRING_LENGTH("&::ROOTFOLDER&")
+/AS_INTEGER=TRUE
+;
+
+Set_Pipeline_Parameter_From_Expression
+/PARAMETER_NAME=LAST_SLASH
+/EXPRESSION=STRING_REVERSE_FIND("&::ROOTFOLDER&","\",&::PATH_LENGTH&-1)
+/AS_INTEGER=TRUE
+;
+
+Set_Pipeline_Parameter_From_Expression
+/PARAMETER_NAME=SECOND_LAST_SLASH
+/EXPRESSION=STRING_REVERSE_FIND("&::ROOTFOLDER&","\",&::LAST_SLASH&-1)
+/AS_INTEGER=TRUE
+;
+
+Set_Pipeline_Parameter_From_Expression
+/PARAMETER_NAME=THIRD_LAST_SLASH
+/EXPRESSION=STRING_REVERSE_FIND("&::ROOTFOLDER&","\",&::SECOND_LAST_SLASH&-1)
+/AS_INTEGER=TRUE
+;
+
+Set_Pipeline_Parameter_From_Expression
+/PARAMETER_NAME=FOURTH_LAST_SLASH
+/EXPRESSION=STRING_REVERSE_FIND("&::ROOTFOLDER&","\",&::THIRD_LAST_SLASH&-1)
+/AS_INTEGER=TRUE
+;
+
+Set_Pipeline_Parameter_From_Expression
+/PARAMETER_NAME=TRIAL_LEN
+/EXPRESSION=(&::LAST_SLASH&-&::SECOND_LAST_SLASH& )-1
+/AS_INTEGER=TRUE
+;
+
+Set_Pipeline_Parameter_From_Expression
+/PARAMETER_NAME=ACTION_LEN
+/EXPRESSION=(&::SECOND_LAST_SLASH&-&::THIRD_LAST_SLASH& )-1
+/AS_INTEGER=TRUE
+;
+
+Set_Pipeline_Parameter_From_Expression
+/PARAMETER_NAME=SUB_LEN
+/EXPRESSION=(&::THIRD_LAST_SLASH&-&::FOURTH_LAST_SLASH& )-1
+/AS_INTEGER=TRUE
+;
+
+! trial
+Set_Pipeline_Parameter_From_Expression
+/PARAMETER_NAME=TRIAL
+/EXPRESSION=String_Mid("&::ROOTFOLDER&",&::SECOND_LAST_SLASH&+1,&::TRIAL_LEN&)
+/AS_INTEGER=FALSE
+;
+
+! action
+Set_Pipeline_Parameter_From_Expression
+/PARAMETER_NAME=ACTION
+/EXPRESSION=String_Mid("&::ROOTFOLDER&",&::THIRD_LAST_SLASH&+1,&::ACTION_LEN&)
+/AS_INTEGER=FALSE
+;
+
+! subject
+Set_Pipeline_Parameter_From_Expression
+/PARAMETER_NAME=SUB
+/EXPRESSION=String_Mid("&::ROOTFOLDER&",&::FOURTH_LAST_SLASH&+1,&::SUB_LEN&)
+/AS_INTEGER=FALSE
+;
+
+Set_Pipeline_Parameter_From_Expression
+/PARAMETER_NAME=SUB_INDEX
+/EXPRESSION=String_Find("&::ROOTFOLDER&","&::ACTION&")
+/AS_INTEGER=TRUE
+;
+
+! Subject level path
+Set_Pipeline_Parameter_From_Expression
+/PARAMETER_NAME=SUB_PATH
+/EXPRESSION=String_Left("&::ROOTFOLDER&",&::SUB_INDEX&)
+/AS_INTEGER=TRUE
+;
+
+! for each c3d file extract parts and tag
+For_Each
+/ITERATION_PARAMETER_NAME=CURRENT_POSE
+!/ITERATION_PARAMETER_COUNT_NAME=COUNT
+/ITEMS=0+1
+;
+
+! is there a cmz in this folder anywhere
+Set_Pipeline_Parameter_To_List_Of_Files
+/PARAMETER_NAME=CMZ_PRESENT
+/FOLDER=::SUB_PATH
+/SEARCH_SUBFOLDERS=TRUE
+/FILE_MASK=*_&::CURRENT_POSE&.cmz
+! /ALPHABETIZE=TRUE
+!/RETURN_FOLDER_NAMES=TRUE
+;
+
+! get the length of the file path to cmz found
+Set_Pipeline_Parameter_From_Expression
+/PARAMETER_NAME=TEST
+/EXPRESSION=STRING_LENGTH("&::CMZ_PRESENT&")
+/AS_INTEGER=TRUE
+;
+
+! length will be zero if no cmz is present
+Conditional_Statement
+/ITERATION_PARAMETER_NAME=ISMATCH
+/EXPRESSION=("&::TEST&"=="&0&")
+!/AS_INTEGER=TRUE
+;
+
+! is there a cmz in this folder anywhere
+Set_Pipeline_Parameter_To_List_Of_Files
+/PARAMETER_NAME=C3D_POSE_LIST
+/FOLDER=::SUB_PATH
+/SEARCH_SUBFOLDERS=TRUE
+/FILE_MASK=*_filt_&::CURRENT_POSE&.c3d
+! /ALPHABETIZE=TRUE
+/RETURN_FOLDER_NAMES=FALSE
+;
+
+! get the length of the file path to cmz found
+Set_Pipeline_Parameter_From_Expression
+/PARAMETER_NAME=TEST_LIST_LENGTH
+/EXPRESSION=STRING_LENGTH("&::C3D_POSE_LIST&")
+/AS_INTEGER=TRUE
+;
+
+! length will be zero if no c3d is present
+Conditional_Statement
+/ITERATION_PARAMETER_NAME=ISMATCH2
+/EXPRESSION=("&::TEST_LIST_LENGTH&">"&0&")
+!/AS_INTEGER=TRUE
+;
+
+! the following commands will be done if no cmz is found
+! open all filtered c3d into workspace
+File_Open
+/FILE_NAME=::SUB_PATH&*_filt_&::CURRENT_POSE&.c3d
+! /FILE_PATH=
+/SEARCH_SUBFOLDERS=TRUE
+! /SUFFIX=
+! /SET_PROMPT=File_Open
+/ON_FILE_NOT_FOUND=CONTINUE
+! /FILE_TYPES_ON_PROMPT=
+;
+
+Select_Active_File
+/FILE_NAME=ALL_FILES
+! /QUERY=
+! /SUBJECT_TAGS=NO_SUBJECT
+;
+
+!! get list of auto tags
+!Set_Pipeline_Parameter_To_List_Of_Tags
+!/PARAMETER_NAME=DEFAULT_TAGS
+!!/GET_CURRENT_SELECTED_FILES=FALSE
+!;
+
+!! remove auto tags
+!Remove_Tags
+!/MOTION_FILE_NAMES=ALL_FILES
+!/TAGS=::DEFAULT_TAGS
+!;
+
+! Get list of c3d files in workspace
+Set_Pipeline_Parameter_To_List_Of_Tagged_Files
+/PARAMETER_NAME=LIST
+/TAG_NAME=ALL_FILES
+! /GET_CURRENT_SELECTED_FILES=false
+/USE_SHORT_FILENAMES=TRUE
+;
+
+! for each c3d file extract parts and tag
+For_Each
+/ITERATION_PARAMETER_NAME=CURRENT_C3D
+!/ITERATION_PARAMETER_COUNT_NAME=COUNT
+/ITEMS=::LIST
+;
+
+Set_Pipeline_Parameter_From_Expression
+/PARAMETER_NAME=FIRST_INDEX
+/EXPRESSION=String_Find("&::CURRENT_C3D&","_",0)
+/AS_INTEGER=TRUE
+;
+
+Set_Pipeline_Parameter_From_Expression
+/PARAMETER_NAME=SECOND_INDEX
+/EXPRESSION=String_Find("&::CURRENT_C3D&","_",&::FIRST_INDEX+1&)
+/AS_INTEGER=TRUE
+;
+
+Set_Pipeline_Parameter_From_Expression
+/PARAMETER_NAME=SECOND_INDEX2
+/EXPRESSION=(&::SECOND_INDEX& - &::FIRST_INDEX&)-1
+/AS_INTEGER=TRUE
+;
+
+Set_Pipeline_Parameter_From_Expression
+/PARAMETER_NAME=THIRD_INDEX
+/EXPRESSION=String_Find("&::CURRENT_C3D&","_",&::SECOND_INDEX+1&)
+/AS_INTEGER=TRUE
+;
+
+! action level tag (level 3)
+Set_Pipeline_Parameter_From_Expression
+/PARAMETER_NAME=SUBJECT_NAME
+/EXPRESSION=String_LEFT("&::CURRENT_C3D&",String_Find("&::CURRENT_C3D&","_",0))
+/AS_INTEGER=FALSE
+;
+
+! subject level tag (level 2)
+Set_Pipeline_Parameter_From_Expression
+/PARAMETER_NAME=ACTION
+/EXPRESSION=String_Mid("&::CURRENT_C3D&",&::FIRST_INDEX+1&,&::SECOND_INDEX2&)
+/AS_INTEGER=FALSE
+;
+
+! assign action tag to file
+Assign_Tags_To_Files
+/MOTION_FILE_NAMES=*&::CURRENT_C3D&
+!/QUERY=::CURRENT_C3D
+/TAGS=::ACTION
+;
+
+! end for current_c3d
+End_For_Each
+/ITERATION_PARAMETER_NAME=CURRENT_C3D
+;
+
+! select all files
+Select_Active_File
+/FILE_NAME=GLOBAL
+! /QUERY=
+;
+
+Create_Text_Data
+/SIGNAL_FOLDER=SUBJECT_POSE
+/SIGNAL_NAMES=SUBJECT_POSE
+/TEXT_DATA=::SUB&_pose_&::CURRENT_POSE
+! /TEXT_FILE_NAME=
+! /PROMPT_ON_EMPTY=TRUE
+;
+
+! select all files
+Select_Active_File
+/FILE_NAME=ALL_FILES
+! /QUERY=
+;
+
+! save the cmz
+! saving as subject name as file name
+File_Save_As
+/FILE_NAME=::SUB_PATH&::SUB&_pose_&::CURRENT_POSE&.cmz
+! /SET_PROMPT=Save CMO file as
+! /SAVE_EMBEDDED_GRAPHICS=FALSE
+;
+
+! do everything in the call_script
+Call_Script
+/SCRIPT_FILE_NAME=0_call_script.v3s
+/SCRIPT_PATH=::CALL_SCRIPT_SCRIPT_PATH
+;
+
+! Clears the workspace before moving on to the next subject
+File_New
+;
+
+! end for loop ISMATCH
+Conditional_Statement_End
+/ITERATION_PARAMETER_NAME=ISMATCH2
+;
+
+! end for loop ISMATCH
+Conditional_Statement_End
+/ITERATION_PARAMETER_NAME=ISMATCH
+;
+
+! end for current_c3d
+End_For_Each
+/ITERATION_PARAMETER_NAME=CURRENT_POSE
+;
+
+! end for loop ROOTFOLDER
+End_For_Each
+/ITERATION_PARAMETER_NAME=ROOTFOLDER
+;
+
