@@ -30,6 +30,19 @@ streamlit run dashboard.py                            # browse either database
 
 The database is **rebuilt from the V3D exports on every run**. The exports are the source of truth, so a new subject means: add their folder, re-run.
 
+## Try it without real data
+
+**[docs/tutorial.ipynb](docs/tutorial.ipynb)** is a step-by-step walkthrough, readable on GitHub with all outputs and figures. It covers:
+- opening the database and looking inside the file;
+- plotting one trial with its events;
+- time-normalizing every trial;
+- pulling metrics into a table;
+- body-weight normalization and limb symmetry (injured vs uninjured);
+- a correlation;
+- exporting to CSV.
+
+It runs on **`demo/demo_database.h5`**, a **fully synthetic** dataset of 12 subjects with CMJ and squats, generated from simple movement models by `make_demo_database.py`. It contains no real subject data and is safe to share. The same code runs on the real database by changing one path.
+
 ## Using the data
 
 **Python**
@@ -69,7 +82,8 @@ The full file layout is in [docs/hdf5_layout.md](docs/hdf5_layout.md).
 | `rtp_ingest.py` | Builds the HDF5 database from Qualisys/V3D session exports |
 | `v3d_db.py` | Reads the database into pandas (tables, curves, normalization) |
 | `dashboard.py` | Streamlit dashboard |
-| `make_mock_database.py` | Generates the synthetic multi-subject mock database |
+| `make_demo_database.py`, `demo/demo_database.h5` | Fully synthetic demo dataset (shareable), used by the tutorial |
+| `make_mock_database.py` | Lab-only mock: perturbed copies of a real subject's trials (not shareable, not in the repo) |
 | `build_dictionary.py`, `v3s_parser.py` | Parse every V3D pipeline (`.v3s`, `.mdh`) into the variable dictionary |
 | `dictionary/` | The variable dictionary: `standard_names.csv` and `pipelines.csv` (edited by hand) and `v3d_dictionary.xlsx` (generated report) |
 | `RTP-Assessment/` | Reference copies of the Qualisys RTP-Assessment V3D pipelines (CMJ, SJ, squatting, static) and `Theia.mdh`, with subject paths replaced by placeholders |
@@ -83,6 +97,7 @@ The full file layout is in [docs/hdf5_layout.md](docs/hdf5_layout.md).
 - **No subject data is in this repository.** `.gitignore` excludes subject folders, capture files (`.qtm`, `.c3d`, video), V3D workspaces and all `.h5` databases.
 - **The database stores only:** subject ID, sex, dominance, height, weight, injured side, injury and event mode. Names, date of birth, e-mail, comments and injury history from Qualisys `session.xml` are never read. The code also never uses the Qualisys subject folder name (`<LastName>_<ID>`).
 - **The mock database is derived from a real subject's data**, so keep it off GitHub as well and share it only within the lab.
+- **`demo/demo_database.h5` is the only database in the repository.** It's generated from equations, with no real subject behind it.
 
 ## Next steps
 

@@ -28,6 +28,9 @@ session_data.xml
 database/
 *.h5
 *.h5.tmp
+# ...except the FULLY SYNTHETIC demo database (no real subject data), which is shared
+!demo/demo_database.h5
+demo/exports/
 
 # V3D export drop folders and staging
 V3D_Exports/
